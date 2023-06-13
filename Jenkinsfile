@@ -31,6 +31,12 @@ pipeline {
               }
             }
            } 
+
+       stage('Trivy Scan Vulnerability images - Docker') {
+            steps {
+              sh "bash trivy-scan-image-.sh" 
+            }
+           } 
     
  stage("Quality Gate") {
     steps {
