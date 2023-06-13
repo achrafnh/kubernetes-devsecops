@@ -26,25 +26,24 @@ pipeline {
 stage("Quality Gate") {
     steps {
         script {
-            def taskId = null
             def status = null
             
             timeout(time: 1, unit: 'HOURS') {
                 // Submit the analysis to SonarQube
                 withSonarQubeEnv('SonarQube') {
-                    sh "mvn sonar:sonar -Dsonar.projectKey=test  -Dsonar.host.url=http://testdeux.eastus.cloudapp.azure.com:9000 -Dsonar.token=sqp_cd8b1a2f1dc0cd69ff552f8621931dea02448b4c"
-                    
-                    // Collect the task ID for the analysis
-                    taskId = env.SONAR_TASK_ID
+                    sh "mvn sonar:sonar -Dsonar.projectKey=test -Dsonar.host.url=http://testdeux.eastus.cloudapp.azure.com:9000 -Dsonar.token=sqp_cd8b1a2f1dc0cd69ff552f8621931dea02448b4c"
                 }
+                
+                // Wait for the SonarQube analysis and collect the task ID
+                def qg = waitForQualityGate()
+                def taskId = qg.taskId
                 
                 // Check the status of the SonarQube task
                 while (status != 'SUCCESS' && status != 'FAILED' && status != 'CANCELED') {
                     sleep 10 // Wait for 10 seconds between each check
                     withCredentials([string(credentialsId: 'sonar-password', variable: 'SONAR_PASSWORD')]) {
-status = sh(returnStatus: true, script: "curl -sS -u admin:$SONAR_PASSWORD 'http://testdeux.eastus.cloudapp.azure.com:9000/api/ce/task?id=${taskId}' | jq -r '.task.status'")
+                        status = sh(returnStatus: true, script: "curl -sS -u admin:$SONAR_PASSWORD 'http://testdeux.eastus.cloudapp.azure.com:9000/api/ce/task?id=${taskId}' | jq -r '.task.status'")
                     }
-                    
                 }
             }
             
