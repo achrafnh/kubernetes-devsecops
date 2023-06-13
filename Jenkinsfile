@@ -22,6 +22,7 @@ pipeline {
     }
 
 
+
 stage("Quality Gate") {
     steps {
         script {
@@ -31,8 +32,7 @@ stage("Quality Gate") {
             timeout(time: 1, unit: 'HOURS') {
                 // Submit the analysis to SonarQube
                 withSonarQubeEnv('SonarQube') {
-                    // Run your build and analysis steps here
-                    // ...
+                    sh "mvn sonar:sonar -Dsonar.projectKey=test  -Dsonar.host.url=http://testdeux.eastus.cloudapp.azure.com:9000 -Dsonar.token=sqp_cd8b1a2f1dc0cd69ff552f8621931dea02448b4c"
                     
                     // Collect the task ID for the analysis
                     taskId = env.SONAR_TASK_ID
@@ -41,7 +41,10 @@ stage("Quality Gate") {
                 // Check the status of the SonarQube task
                 while (status != 'SUCCESS' && status != 'FAILED' && status != 'CANCELED') {
                     sleep 10 // Wait for 10 seconds between each check
-                    status = sh(returnStatus: true, script: "curl -sS -u admin:admin123 'http://testdeux.eastus.cloudapp.azure.com:9000/api/ce/task?id=${taskId}' | jq -r '.task.status'")
+                    withCredentials([string(credentialsId: 'sonar-password', variable: 'SONAR_PASSWORD')]) {
+status = sh(returnStatus: true, script: "curl -sS -u admin:$SONAR_PASSWORD 'http://testdeux.eastus.cloudapp.azure.com:9000/api/ce/task?id=${taskId}' | jq -r '.task.status'")
+                    }
+                    
                 }
             }
             
@@ -54,11 +57,6 @@ stage("Quality Gate") {
         }
     }
 }
-
-
-
-
-
 
     //stage('Mutation Tests - PIT Tests') {
     //    steps {
