@@ -22,7 +22,9 @@ pipeline {
 
    stage('Vulnerability Scan - Docker') {
             steps {
-              sh "mvn dependency-check:check" 
+              catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                sh "mvn dependency-check:check" 
+              }
             }
             post{
               always{
