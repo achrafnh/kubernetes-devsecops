@@ -33,7 +33,13 @@ pipeline {
               }
             }
            } 
-    
+    stage('Trivy Scan Vulnerability images - Docker') {
+            steps {
+              catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+              sh "sudo bash trivy-scan-image-.sh" 
+              }
+            }
+           } 
  stage("Quality Gate") {
     steps {
         script {
