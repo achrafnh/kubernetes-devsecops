@@ -2,28 +2,37 @@ pipeline {
   agent any
 
   stages {
+      stage('Build Artifact') {
+            steps {
+              sh "mvn clean package -DskipTests=true"
+              archive 'target/*.jar' 
+            }
+        }   
+          stage('Unit Tests') {
+            steps {
+              sh "mvn test" 
+            }
+            post{
+              always{
+                junit 'target/surefire-reports/*.xml'
+              
+              }
+            }
+           } 
 
-    stage('Build Artifact') {
-      steps {
-        sh "mvn clean package -DskipTests=true"
-        archive 'target/*.jar'
-      }
-    }
-    stage('Unit Tests') {
-      steps {
-        sh "mvn test"
-      }
-      post {
-        always {
-          junit 'target/surefire-reports/*.xml'
-          jacoco(execPattern: 'target/jacoco.exec')
-        }
-      }
-    }
-
-
-
-stage("Quality Gate") {
+   stage('Vulnerability Scan - Docker') {
+            steps {
+              sh "mvn dependency-check:check" 
+            }
+            post{
+              always{
+               dependencyCheckPublisher pattern: 'target/dependency-check-report.xml'
+                jacoco(execPattern: 'target/jacoco.exec')
+              }
+            }
+           } 
+    
+ stage("Quality Gate") {
     steps {
         script {
             def taskId = null
@@ -58,35 +67,55 @@ status = sh(returnStatus: true, script: "curl -sS -u admin:$SONAR_PASSWORD 'http
     }
 }
 
-    //stage('Mutation Tests - PIT Tests') {
-    //    steps {
-    //     sh "mvn org.pitest:pitest-maven:mutationCoverage"
-    //    }
-    //    post{
-    //      always{
-    //       pitmutation mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
 
-    //       }
-    //    }
-    //  }
+    
+       
+    
+         //stage('Mutation Tests - PIT Tests') {
+          //  steps {
+             // sh "mvn org.pitest:pitest-maven:mutationCoverage" 
+           // }
+           // post{
+             // always{
+             // pitmutation mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
+            
+              //}
+           // }
+           //} 
 
-    stage('Docker build & push a') {
-      steps {
-        withCredentials([string(credentialsId: 'pass-dh-nm', variable: 'DOCKER_HUB_PASSWORD')]) {
-          sh 'sudo docker login -u nylv -p $DOCKER_HUB_PASSWORD'
-          sh "sudo printenv"
-          sh 'sudo docker build -t nylv/numeric-app:""$GIT_COMMIT"" .'
-          sh 'sudo docker push nylv/numeric-app:""$GIT_COMMIT"" '
-        }
-      }
-    }
-    stage('Kube8') {
-      steps {
-        withKubeConfig([credentialsId: 'kubeconfig']) {
-          sh "sed -i 's#replace#nylv/numeric-app:$GIT_COMMIT#g' k8s_deployment_service.yaml"
-          sh "kubectl apply -f k8s_deployment_service.yaml"
-        }
-      }
-    }
-  }
+
+        stage('Docker Build and Push ') {
+            steps {
+             
+               withCredentials([string(credentialsId: 'docker-hub-password', variable: 'DOCKER_HUB_PASSWORD')]) {
+                    sh 'sudo docker login -u hrefnhaila -p $DOCKER_HUB_PASSWORD'
+              sh "sudo printenv"
+              sh 'sudo docker build -t hrefnhaila/numeric-app:""$GIT_COMMIT"" .'
+              sh 'sudo docker push hrefnhaila/numeric-app:""$GIT_COMMIT"" ' 
+                }
+             
+          
+                
+            }
+        } 
+
+
+            stage('Kubernetes deployment - DEV ') {
+            steps {
+             
+                  withKubeConfig([credentialsId: 'kubeconf']) {
+             
+                 
+                    sh "sed -i 's#replace#hrefnhaila/numeric-app:$GIT_COMMIT#g' k8s_deployment_service.yaml"
+                    sh "kubectl apply -f k8s_deployment_service.yaml"
+             
+                }
+             
+          
+                
+            }
+        } 
+
+    
+     }
 }
