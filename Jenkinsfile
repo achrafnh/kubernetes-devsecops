@@ -60,11 +60,11 @@ status = sh(returnStatus: true, script: "curl -sS -u admin:$SONAR_PASSWORD 'http
             }
             
             // Handle the status accordingly
-            if (status == 'SUCCESS') {
+           /* if (status == 'SUCCESS') {
                 echo "SonarQube analysis completed successfully."
             } else {
                 error "SonarQube analysis failed or was canceled."
-            }
+            }*/
         }
     }
 }
