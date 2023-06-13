@@ -29,22 +29,24 @@ pipeline {
 withSonarQubeEnv('SonarQube') {
 sh "mvn clean verify sonar:sonar -Dsonar.projectKey=test -Dsonar.projectName='test' -Dsonar.host.url=http://testdeux.eastus.cloudapp.azure.com:9000 -Dsonar.token=sqp_cd8b1a2f1dc0cd69ff552f8621931dea02448b4c"
 }
-                timeout(time: 1, unit: 'HOURS') {
-              //  script{
-               // waitForQualityGate  abortPipeline: true
-                //}
-
- def qg = waitForQualityGate() // Reuse taskId previously collected by withSonarQubeEnv
-    if (qg.status != 'OK') {
-      error "Pipeline aborted due to quality gate failure: ${qg.status}"
-    }
-                  
-                }
-
 
               
       
            } }
+
+    stage("Quality Gate") {
+    steps {
+        timeout(time: 1, unit: 'HOURS') {
+            script {
+                def qg = waitForQualityGate() // Reuse taskId previously collected by withSonarQubeEnv
+                if (qg.status != 'OK') {
+                    error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                }
+            }
+        }
+    }
+}
+
 
 
     
