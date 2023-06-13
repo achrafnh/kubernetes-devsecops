@@ -32,7 +32,7 @@ pipeline {
     
          stage('Mutation Tests - PIT Tests') {
             steps {
-             # sh "mvn org.pitest:pitest-maven:mutationCoverage" 
+             // sh "mvn org.pitest:pitest-maven:mutationCoverage" 
             }
             post{
               always{
