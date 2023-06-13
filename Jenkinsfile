@@ -19,5 +19,11 @@ pipeline {
                 }
             }
          }
+          stage('Docker build & push') {
+            steps {
+              sh "sudo printenv"
+              sh 'sudo docker build -t nmadhia/numeric-apps: ""$GIT_COMMIT"" .'
+            }
+         }
     }
 }
