@@ -23,7 +23,7 @@ pipeline {
 
         stage('Docker Build and Push ') {
             steps {
-              withDockerRegistry([credentialsId: 'dockerhub', url: '$DOCKER_REGISTRY_URL']){
+              withDockerRegistry([credentialsId: 'dockerhub', url: '']){
                 
               
               sh "sudo printenv"
