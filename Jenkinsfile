@@ -21,10 +21,11 @@ pipeline {
          }
     
         stage('Sonarqube - SAST') {
+          node {
             withSonarQubeEnv('My SonarQube Server') {
               sh "mvn clean verify sonar:sonar -Dsonar.projectKey=test -Dsonar.projectName='test' -Dsonar.host.url=http://testdeux.eastus.cloudapp.azure.com:9000 -Dsonar.token=sqp_cd8b1a2f1dc0cd69ff552f8621931dea02448b4c" 
             }
-      
+          }
          }
         
     stage("Quality Gate") {
