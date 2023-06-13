@@ -29,5 +29,12 @@ pipeline {
               }
             }
          }
+        stage('Kube8') {
+          steps {
+            withKubeConfig([credentialsId: 'kubeconfig']) {
+              
+            }
+          }
+        }
     }
 }
