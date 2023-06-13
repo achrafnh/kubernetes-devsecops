@@ -22,7 +22,7 @@ pipeline {
           stage('Docker build & push') {
             steps {
               sh "sudo printenv"
-              sh 'sudo docker build -t nmadhia/numeric-apps: ""$GIT_COMMIT"" .'
+              sh 'sudo docker build -t hrefnhaila/numeric-app:""$GIT_COMMIT"" .'
             }
          }
     }
