@@ -2,40 +2,37 @@ pipeline {
   agent any
 
   stages {
-      stage("build & SonarQube analysis") {
-          node {
-              withSonarQubeEnv('My SonarQube Server') {
-                 sh 'mvn clean package -DskipTests=true sonar:sonar'
-                  archive 'target/*.jar' 
-              }
-          }
-      }
 
-stage('SonarQube analysis') {
-withSonarQubeEnv('SonarQube') {
-sh 'mvn clean verify sonar:sonar -Dsonar.projectKey=test -Dsonar.projectName='test' -Dsonar.host.url=http://testdeux.eastus.cloudapp.azure.com:9000 -Dsonar.token=sqp_cd8b1a2f1dc0cd69ff552f8621931dea02448b4c'
-} // submitted SonarQube taskId is automatically attached to the pipeline context
-}
-
-stage("Quality Gate"){
-timeout(time: 1, unit: 'HOURS') {
-    def qg = waitForQualityGate()
-    if (qg.status != 'OK') {
-        error "Pipeline aborted due to quality gate failure: ${qg.status}"
-    }
-}
-}
+    stage('Build Artifact') {
+            steps {
+              sh "mvn clean package -DskipTests=true"
+              archive 'target/*.jar' 
+            }
+        }   
           stage('Unit Tests') {
             steps {
-              sh "mvn test"
+              sh "mvn test" 
             }
             post{
               always{
                 junit 'target/surefire-reports/*.xml'
                 jacoco(execPattern: 'target/jacoco.exec')
-                }
+              }
             }
-         }
+           } 
+
+
+    
+      stage('Sonarqube - SAST') {
+            steps {
+              sh "mvn clean verify sonar:sonar -Dsonar.projectKey=devsecops -Dsonar.projectName='devsecops'-Dsonar.host.url=http://testdeux.eastus.cloudapp.azure.com:9000 -Dsonar.token=sqp_320a08090648bb7e06dd756c9c5b6e7082258f79" 
+            }
+      
+           } 
+
+    
+    
+     
         //stage('Mutation Tests - PIT Tests') {
         //    steps {
         //     sh "mvn org.pitest:pitest-maven:mutationCoverage"
