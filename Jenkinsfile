@@ -21,20 +21,42 @@ pipeline {
       }
     }
 
-    stage('Sonarqube - SAST') {
-      steps {
 
-        withSonarQubeEnv('SonarQube') {
-          sh "mvn sonar:sonar -Dsonar.projectKey=test  -Dsonar.host.url=http://testdeux.eastus.cloudapp.azure.com:9000 -Dsonar.token=sqp_cd8b1a2f1dc0cd69ff552f8621931dea02448b4c"
+stage("Quality Gate") {
+    steps {
+        script {
+            def taskId = null
+            def status = null
+            
+            timeout(time: 1, unit: 'HOURS') {
+                // Submit the analysis to SonarQube
+                withSonarQubeEnv('SonarQube') {
+                    // Run your build and analysis steps here
+                    // ...
+                    
+                    // Collect the task ID for the analysis
+                    taskId = env.SONAR_TASK_ID
+                }
+                
+                // Check the status of the SonarQube task
+                while (status != 'SUCCESS' && status != 'FAILED' && status != 'CANCELED') {
+                    sleep 10 // Wait for 10 seconds between each check
+                    status = sh(returnStatus: true, script: "curl -sS -u admin:admin123 'http://testdeux.eastus.cloudapp.azure.com:9000/api/ce/task?id=${taskId}' | jq -r '.task.status'")
+                }
+            }
+            
+            // Handle the status accordingly
+            if (status == 'SUCCESS') {
+                echo "SonarQube analysis completed successfully."
+            } else {
+                error "SonarQube analysis failed or was canceled."
+            }
         }
-        timeout(time: 10,unit: 'MINUTES'){
-          script{
-            waitForQualityGate abortPipeline: true
-          }
-        }
-
-      }
     }
+}
+
+
+
 
 
 
