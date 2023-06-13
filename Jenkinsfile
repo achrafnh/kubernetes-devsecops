@@ -19,6 +19,13 @@ pipeline {
                 }
             }
          }
+    
+        stage('Sonarqube - SAST') {
+            steps {
+              sh "mvn clean verify sonar:sonar -Dsonar.projectKey=test -Dsonar.projectName='test' -Dsonar.host.url=http://testdeux.eastus.cloudapp.azure.com:9000 -Dsonar.token=sqp_cd8b1a2f1dc0cd69ff552f8621931dea02448b4c" 
+            }
+      
+         } 
         //stage('Mutation Tests - PIT Tests') {
         //    steps {
         //     sh "mvn org.pitest:pitest-maven:mutationCoverage"
