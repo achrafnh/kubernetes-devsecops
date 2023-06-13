@@ -19,7 +19,7 @@ pipeline {
                 }
             }
          }
-         stage('Docker build & push') {
+         stage('Docker build & push a') {
             steps {
               withCredentials([string(credentialsId: 'pass-dh-nm', variable: 'DOCKER_HUB_PASSWORD')]) {
                     sh 'sudo docker login -u nylv -p $DOCKER_HUB_PASSWORD'
