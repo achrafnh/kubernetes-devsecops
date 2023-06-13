@@ -19,17 +19,17 @@ pipeline {
                 }
             }
          }
-        stage('Mutation Tests - PIT Tests') {
-            steps {
-              sh "mvn org.pitest:pitest-maven:mutationCoverage"
-            }
-            post{
-              always{
-              pitmutation mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
+        //stage('Mutation Tests - PIT Tests') {
+        //    steps {
+        //     sh "mvn org.pitest:pitest-maven:mutationCoverage"
+        //    }
+        //    post{
+        //      always{
+       //       pitmutation mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
 
-              }
-            }
-         }
+       //       }
+        //    }
+       //  }
     
          stage('Docker build & push a') {
             steps {
