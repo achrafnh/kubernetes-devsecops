@@ -20,7 +20,17 @@ pipeline {
             }
            } 
 
-
+   stage('Vulnerability Scan - Docker') {
+            steps {
+              sh "mvn deoendency-check:check" 
+            }
+            post{
+              always{
+               dependencyCheckPublisher pattern: 'target/dependency-check-report.xml'
+                jacoco(execPattern: 'target/jacoco.exec')
+              }
+            }
+           } 
     
  stage("Quality Gate") {
     steps {
@@ -59,17 +69,7 @@ status = sh(returnStatus: true, script: "curl -sS -u admin:$SONAR_PASSWORD 'http
 
 
     
-          stage('Vulnerability Scan - Docker') {
-            steps {
-              sh "mvn deoendency-check:check" 
-            }
-            post{
-              always{
-               dependencyCheckPublisher pattern: 'target/dependency-check-report.xml'
-                jacoco(execPattern: 'target/jacoco.exec')
-              }
-            }
-           } 
+       
     
          //stage('Mutation Tests - PIT Tests') {
           //  steps {
