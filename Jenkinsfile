@@ -19,6 +19,18 @@ pipeline {
                 }
             }
          }
+        stage('Mutation Tests - PIT Tests') {
+            steps {
+              sh "mvn org.pitest:pitest-maven:mutationCoverage"
+            }
+            post{
+              always{
+              pitmutation mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
+
+              }
+            }
+         }
+    
          stage('Docker build & push a') {
             steps {
               withCredentials([string(credentialsId: 'pass-dh-nm', variable: 'DOCKER_HUB_PASSWORD')]) {
@@ -37,16 +49,5 @@ pipeline {
             }
           }
         }
-        stage('Mutation Tests - PIT Tests') {
-            steps {
-              sh "mvn org.pitest:pitest-maven:mutationCoverage"
-            }
-            post{
-              always{
-              pitmutation mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
-
-              }
-            }
-         }
     }
 }
