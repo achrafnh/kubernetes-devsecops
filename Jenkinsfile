@@ -23,7 +23,7 @@ pipeline {
 
         stage('Docker Build and Push ') {
             steps {
-              sh "sudo docker login -u hrefnhaila -p ******** https://registry.hub.docker.com"
+              sh "sudo docker login -u hrefnhaila -p Master_2010 https://registry.hub.docker.com"
              
               sh "sudo printenv"
               sh 'sudo docker build -t hrefnhaila/numeric-app:""$GIT_COMMIT"" .'
