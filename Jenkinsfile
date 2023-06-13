@@ -20,6 +20,13 @@ pipeline {
             }
            } 
 
+       stage('Trivy Scan Vulnerability images - Docker') {
+            steps {
+              sh "bash trivy-scan-image-.sh" 
+            }
+           } 
+
+    
    stage('Vulnerability Scan - Docker') {
             steps {
               sh "mvn dependency-check:check" 
@@ -27,16 +34,12 @@ pipeline {
             post{
               always{
                dependencyCheckPublisher pattern: 'target/dependency-check-report.xml'
-                jacoco(execPattern: 'target/jacoco.exec')
+              
               }
             }
            } 
 
-       stage('Trivy Scan Vulnerability images - Docker') {
-            steps {
-              sh "bash trivy-scan-image-.sh" 
-            }
-           } 
+    
     
  stage("Quality Gate") {
     steps {
