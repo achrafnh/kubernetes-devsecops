@@ -24,14 +24,9 @@ pipeline {
     
       stage('Sonarqube - SAST') {
             steps {
-              sh "mvn clean verify sonar:sonar   -Dsonar.projectKey=devsecops   -Dsonar.projectName='devsecops'   -Dsonar.host.url=http://testdeux.eastus.cloudapp.azure.com:9000   -Dsonar.token=sqp_320a08090648bb7e06dd756c9c5b6e7082258f79" 
+              sh "mvn clean verify sonar:sonar -Dsonar.projectKey=devsecops -Dsonar.projectName='devsecops'-Dsonar.host.url=http://testdeux.eastus.cloudapp.azure.com:9000 -Dsonar.token=sqp_320a08090648bb7e06dd756c9c5b6e7082258f79" 
             }
-            post{
-              always{
-              pitmutation mutationStatsFile: '**/target/pit-reports/**/mutations.xml'
-            
-              }
-            }
+      
            } 
 
     
