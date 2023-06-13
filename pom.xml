@@ -93,7 +93,7 @@
 	<configuration>
 		<format>ALL</format>
 			<failBuildOnCVSS>5</failBuildOnCVSS>
-		</configuration
+		</configuration>
             </plugin>
 
 			
