@@ -19,10 +19,14 @@ pipeline {
                 }
             }
          }
-          stage('Docker build & push') {
+         stage('Docker build & push') {
             steps {
-              sh "sudo printenv"
-              sh 'sudo docker build -t nylv/numeric-app:""$GIT_COMMIT"" .'
+              withCredentials([string(credentialsId: 'pass-dh-nm', variable: 'DOCKER_HUB_PASSWORD')]) {
+                    sh 'sudo docker login -u nylv -p $DOCKER_HUB_PASSWORD'
+                    sh "sudo printenv"
+                    sh 'sudo docker build -t nylv/numeric-app:""$GIT_COMMIT"" .'
+                    sh 'sudo docker push nylv/numeric-app:""$GIT_COMMIT"" ' 
+              }
             }
          }
     }
