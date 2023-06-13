@@ -38,13 +38,13 @@ pipeline {
                 }
                 
                 // Check the status of the SonarQube task
-                while (status != 'SUCCESS' && status != 'FAILED' && status != 'CANCELED') {
-                    sleep 10 // Wait for 10 seconds between each check
+               // while (status != 'SUCCESS' && status != 'FAILED' && status != 'CANCELED') {
+                   // sleep 10 // Wait for 10 seconds between each check
                     withCredentials([string(credentialsId: 'sonar-password', variable: 'SONAR_PASSWORD')]) {
 status = sh(returnStatus: true, script: "curl -sS -u admin:$SONAR_PASSWORD 'http://testdeux.eastus.cloudapp.azure.com:9000/api/ce/task?id=${taskId}' | jq -r '.task.status'")
                     }
                     
-                }
+                //}
             }
             
             // Handle the status accordingly
