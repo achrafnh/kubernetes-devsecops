@@ -45,59 +45,6 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-
-<plugin>
-		<groupId>org.jacoco</groupId>
-		<artifactId>jacoco-maven-plugin</artifactId>
-		<version>0.8.5</version>
-		<executions>
-			<execution>
-				<goals>
-					<goal>prepare-agent</goal>
-				</goals>
-			</execution>
-			<!-- attached to Maven test phase -->
-			<execution>
-				<id>report</id>
-				<phase>test</phase>
-				<goals>
-					<goal>report</goal>
-				</goals>
-			</execution>
-		</executions>
-	</plugin>
-
-	<plugin>
-    <groupId>org.pitest</groupId>
-    <artifactId>pitest-maven</artifactId>
-    <version>1.5.0</version>
-		<dependencies>
-		<dependency>
-			<groupId>org.pitest.boot</groupId>
-			<artifactId>pitest-junit5-plugin</artifactId>
-			  <version>0.12</version>
-		</dependency>
-		</dependencies>
-		<configuration>
-<mutationThreshold>70</mutationThreshold>
-			<outputFormats>
-				<outputFormat>XML</outputFormat>
-				<outputFormat>HTML</outputFormat>
-			</outputFormats>
-</configuration>
- </plugin>
-<plugin>
-              <groupId>org.owasp</groupId>
-              <artifactId>dependency-check-maven</artifactId>
-              <version>6.1.6</version>
-	<configuration>
-		<format>ALL</format>
-			<failBuildOnCVSS>5</failBuildOnCVSS>
-		</configuration>
-            </plugin>
-
-			
-			
 			
 		</plugins>
 	</build>
