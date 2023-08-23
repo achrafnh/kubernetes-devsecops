@@ -5,7 +5,7 @@
 ## Clone to Desktop and VM
 
 ## NodeJS Microservice - Docker Image -
-`docker run -p 8787:5000 hrefnhaila/node-service:v1`
+`docker run -p 5000:5000 hrefnhaila/node-service:v1`
 
 `curl localhost:8787/plusone/99`
  
